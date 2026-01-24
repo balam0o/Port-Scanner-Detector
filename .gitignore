@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+scan.json
+safe_scan.json
+*.log
