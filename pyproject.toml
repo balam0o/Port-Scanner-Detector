@@ -1,0 +1,24 @@
+[project]
+name = "port-scanner-detector"
+version = "0.1.0"
+description = "Safe asynchronous TCP port scanner with basic service detection and JSON reporting."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+  { name = "Isaac Balam Rodríguez Arellano" }
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "ruff"
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
