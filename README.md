@@ -1,33 +1,224 @@
-# Port Scanner with Safe Mode and Service Detection
+﻿# Port Scanner Detector
 
-Asynchronous TCP port scanner with basic service detection, banner grabbing, and structured JSON output.  
-Designed for educational use, controlled labs, and authorized security testing.
+Safe asynchronous TCP port scanner with basic service detection, banner grabbing, and structured JSON output.
 
-This project includes a **Safe Mode** that enforces low-impact scanning and prevents accidental scans of public or unauthorized networks.
+This project is designed for educational use, controlled labs, and authorized security testing. It includes a Safe Mode that limits scanning behavior to reduce the risk of accidental scans against public or unauthorized networks.
+
+> Current status: the project currently provides the scanning component. A defensive scan-pattern detection mode is planned as part of the roadmap.
 
 ---
 
 ## Features
 
-- Asynchronous TCP connect scanning (asyncio)
-- Per-host JSON output with timestamps
-- Basic service detection:
-  - HTTP / HTTPS probing (`HEAD /`)
-  - Banner grabbing for common services (FTP, SSH, SMTP, POP3, IMAP)
-- CIDR expansion support
-- Configurable concurrency, timeout, and pacing
-- **Safe Mode for academic networks**
-  - Private targets only (blocks public IPs by default)
-  - Small CIDR limits
-  - Reduced concurrency
-  - Global pacing (rate limiting)
-  - Common ports only by default
+- Asynchronous TCP connect scanning with `asyncio`
+- CIDR target support
+- Custom port lists and port ranges
+- Basic service detection
+  - HTTP / HTTPS probing
+  - Banner grabbing for common services such as SSH, FTP, SMTP, POP3, and IMAP
+- JSON report output
+- Safe Mode for local/private testing
+  - Blocks public IPs by default
+  - Limits CIDR expansion
+  - Caps concurrency
+  - Applies safer timeout and delay defaults
+  - Uses common ports by default
 
 ---
 
-## Quick start (Safe mode – recommended for campus / labs)
+## Project Motivation
 
-Scan your own machine or a controlled VM:
+This project was built to practice core networking and cybersecurity concepts:
 
-```powershell
+- TCP connections
+- Port scanning behavior
+- Service fingerprinting basics
+- Asynchronous programming in Python
+- Safe tooling design for controlled environments
+- JSON-based report generation
+
+The goal is not to build an aggressive scanner, but a small, readable, and responsible tool that demonstrates how port scanning works and how it can be controlled safely.
+
+---
+
+## Requirements
+
+- Python 3.10 or newer
+- No external dependencies required for basic usage
+
+---
+
+## Quick Start
+
+Clone the repository:
+
+```bash
+git clone https://github.com/balam0o/Port-Scanner-Detector.git
+cd Port-Scanner-Detector
+```
+
+Run a safe scan against localhost:
+
+```bash
 python scanner.py --safe --targets 127.0.0.1 --out safe_scan.json
+```
+
+Scan specific ports:
+
+```bash
+python scanner.py --safe --targets 127.0.0.1 --ports 22,80,443,8080 --out safe_scan.json
+```
+
+Scan a small private CIDR range:
+
+```bash
+python scanner.py --safe --targets 192.168.1.0/28 --ports 22,80,443 --out lan_scan.json
+```
+
+Disable service detection:
+
+```bash
+python scanner.py --safe --targets 127.0.0.1 --no-detect --out scan.json
+```
+
+---
+
+## CLI Options
+
+| Option | Description |
+|---|---|
+| `--targets` | Comma-separated hosts or CIDR ranges |
+| `--ports` | Comma-separated ports or port ranges |
+| `--timeout` | Connection timeout in seconds |
+| `--concurrency` | Number of concurrent connection attempts |
+| `--delay` | Delay between attempts per worker |
+| `--out` | Output JSON file path |
+| `--no-detect` | Disable service detection and banner grabbing |
+| `--safe` | Enable safer defaults and public IP restrictions |
+| `--allow-public` | Allow public targets even in safe mode |
+| `--max-cidr-hosts` | Maximum CIDR-expanded hosts in safe mode |
+
+---
+
+## Example Output
+
+```json
+{
+  "meta": {
+    "created_at_utc": "2026-04-20T10:30:00Z",
+    "targets": ["127.0.0.1"],
+    "ports": [22, 80, 443],
+    "detection": true,
+    "safe_mode": true
+  },
+  "results": {
+    "127.0.0.1": [
+      {
+        "port": 80,
+        "protocol": "tcp",
+        "service": "http",
+        "banner": "HTTP/1.1 200 OK",
+        "timestamp_utc": "2026-04-20T10:30:01Z"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Safe Mode
+
+Safe Mode is recommended by default.
+
+When `--safe` is enabled, the scanner:
+
+- Rejects public IP addresses unless `--allow-public` is explicitly provided
+- Limits CIDR expansion
+- Caps concurrency
+- Applies a minimum timeout
+- Adds pacing between attempts
+- Uses a reduced set of common ports if no ports are provided
+
+Example:
+
+```bash
+python scanner.py --safe --targets 127.0.0.1
+```
+
+Trying to scan a public IP in safe mode will be rejected:
+
+```bash
+python scanner.py --safe --targets 8.8.8.8
+```
+
+---
+
+## Ethical Use
+
+Use this tool only on systems you own or systems where you have explicit permission to test.
+
+Do not use this project to scan third-party systems, public IP ranges, university networks, company networks, or cloud infrastructure without written authorization.
+
+This project is intended for:
+
+- Personal learning
+- Local labs
+- Controlled virtual machines
+- Defensive security practice
+- Authorized network testing
+
+---
+
+## Roadmap
+
+- [ ] Add unit tests with `pytest`
+- [ ] Add GitHub Actions CI
+- [ ] Add `pyproject.toml`
+- [ ] Add example JSON reports
+- [ ] Refactor into a proper `src/` package
+- [ ] Add defensive scan-pattern detection from logs
+- [ ] Add horizontal and vertical scan detection rules
+- [ ] Add HTML report generation
+
+---
+
+## Planned Detection Mode
+
+The repository name includes "Detector" because the long-term goal is to include defensive scan-pattern detection.
+
+Planned detection features:
+
+- Detect vertical port scans: one source scanning many ports on one host
+- Detect horizontal scans: one source scanning the same port across many hosts
+- Analyze CSV or JSON connection logs
+- Generate alert reports with severity levels
+
+Example planned usage:
+
+```bash
+python detector.py --input examples/connections.csv --window 60 --threshold 20
+```
+
+Example planned alert:
+
+```json
+{
+  "alerts": [
+    {
+      "type": "vertical_port_scan",
+      "source_ip": "192.168.1.50",
+      "target_ip": "192.168.1.10",
+      "unique_ports": 42,
+      "window_seconds": 60,
+      "severity": "high"
+    }
+  ]
+}
+```
+
+---
+
+## License
+
+MIT License.
