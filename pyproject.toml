@@ -9,6 +9,9 @@ authors = [
   { name = "Isaac Balam Rodríguez Arellano" }
 ]
 
+[project.scripts]
+port-scanner-detector = "scanner:main"
+
 [project.optional-dependencies]
 dev = [
   "pytest",

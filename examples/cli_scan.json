@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "allow_public": false,
+    "concurrency": 50,
+    "delay": 0.02,
+    "detection": true,
+    "max_cidr_hosts": 16,
+    "ports": "22,80,443",
+    "safe_mode": true,
+    "targets": [
+      "127.0.0.1"
+    ],
+    "timeout": 2.0,
+    "timestamp_utc": "2026-04-23T09:27:44Z"
+  },
+  "results": {
+    "127.0.0.1": {
+      "open_ports": []
+    }
+  }
+}

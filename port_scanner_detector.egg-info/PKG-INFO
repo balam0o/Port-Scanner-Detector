@@ -14,6 +14,8 @@ Dynamic: license-file
 
 ﻿# Port Scanner Detector
 
+![CI](https://github.com/balam0o/Port-Scanner-Detector/actions/workflows/ci.yml/badge.svg)
+
 Safe asynchronous TCP port scanner with basic service detection, banner grabbing, and structured JSON output.
 
 This project is designed for educational use, controlled labs, and authorized security testing. It includes a Safe Mode that limits scanning behavior to reduce the risk of accidental scans against public or unauthorized networks.
