@@ -3,3 +3,4 @@ __pycache__/
 scan.json
 safe_scan.json
 *.log
+*.egg-info/

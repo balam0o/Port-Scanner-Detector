@@ -1,3 +1,0 @@
-[console_scripts]
-port-scan-detector = detector:main
-port-scanner-detector = scanner:main
